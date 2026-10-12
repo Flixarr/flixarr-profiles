@@ -1,0 +1,29 @@
+{
+  "_about": "Flixarr quality profiles. Each recipe starts from a TRaSH Guides profile and changes only what's listed. tools/compile.py turns these into profiles.json, the file Flixarr installs download.",
+  "profiles": [
+    {
+      "id": "standard",
+      "name": "Standard",
+      "label": "Standard (1080p)",
+      "description": "1080p Bluray and WEB, upgrading to the best 1080p release. No x265 for HD, no remuxes. The default for most libraries.",
+      "radarr": { "base": "hd-bluray-web" },
+      "sonarr": { "base": "web-1080p" }
+    },
+    {
+      "id": "space-saver",
+      "name": "Space Saver",
+      "label": "Space Saver (720p)",
+      "description": "720p Bluray and WEB for smaller files. Same release-quality rules as Standard (no x265 for HD), just a lower resolution.",
+      "radarr": { "base": "hd-bluray-web", "allowed": ["Bluray-720p", "WEB 720p"], "cutoff": "Bluray-720p" },
+      "sonarr": { "base": "web-1080p", "allowed": ["WEB 720p"], "cutoff": "WEB 720p" }
+    },
+    {
+      "id": "4k",
+      "name": "4K",
+      "label": "4K",
+      "description": "2160p Bluray and WEB with HDR and Dolby Vision preferred. For 4K screens and plenty of space.",
+      "radarr": { "base": "uhd-bluray-web" },
+      "sonarr": { "base": "web-2160p" }
+    }
+  ]
+}
