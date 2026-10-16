@@ -6,24 +6,88 @@
       "name": "Standard",
       "label": "Standard (1080p)",
       "description": "1080p Bluray and WEB, upgrading to the best 1080p release. No x265 for HD, no remuxes. The default for most libraries.",
-      "radarr": { "base": "hd-bluray-web" },
-      "sonarr": { "base": "web-1080p" }
+      "radarr": {
+        "base": "hd-bluray-web"
+      },
+      "sonarr": {
+        "base": "web-1080p"
+      }
     },
     {
       "id": "space-saver",
       "name": "Space Saver",
       "label": "Space Saver (720p)",
       "description": "720p Bluray and WEB for smaller files. Same release-quality rules as Standard (no x265 for HD), just a lower resolution.",
-      "radarr": { "base": "hd-bluray-web", "allowed": ["Bluray-720p", "WEB 720p"], "cutoff": "Bluray-720p" },
-      "sonarr": { "base": "web-1080p", "allowed": ["WEB 720p"], "cutoff": "WEB 720p" }
+      "radarr": {
+        "base": "hd-bluray-web",
+        "allowed": [
+          "Bluray-720p",
+          "WEB 720p"
+        ],
+        "cutoff": "Bluray-720p"
+      },
+      "sonarr": {
+        "base": "web-1080p",
+        "allowed": [
+          "WEB 720p"
+        ],
+        "cutoff": "WEB 720p"
+      }
     },
     {
       "id": "4k",
       "name": "4K",
       "label": "4K",
       "description": "2160p Bluray and WEB with HDR and Dolby Vision preferred. For 4K screens and plenty of space.",
-      "radarr": { "base": "uhd-bluray-web" },
-      "sonarr": { "base": "web-2160p" }
+      "radarr": {
+        "base": "uhd-bluray-web"
+      },
+      "sonarr": {
+        "base": "web-2160p"
+      }
+    },
+    {
+      "id": "4k-fallback",
+      "name": "4K with 1080p fallback",
+      "label": "4K, or 1080p for now",
+      "description": "2160p Bluray and WEB with HDR preferred, but grabs 1080p when no 4K copy exists yet and upgrades to 4K later. For a 4K library that shouldn't wait.",
+      "radarr": {
+        "base": "uhd-bluray-web",
+        "allowed": [
+          "Bluray-2160p",
+          "WEB 2160p",
+          "Bluray-1080p",
+          "WEB 1080p"
+        ],
+        "cutoff": "Bluray-2160p"
+      },
+      "sonarr": {
+        "base": "web-2160p-combined"
+      }
+    },
+    {
+      "id": "remux",
+      "name": "Remux",
+      "label": "Remux (1080p)",
+      "description": "Untouched 1080p Bluray remuxes, falling back to the best WEB release. The highest quality without 4K, and very large files.",
+      "radarr": {
+        "base": "remux-web-1080p"
+      },
+      "sonarr": {
+        "base": "remux-web-1080p"
+      }
+    },
+    {
+      "id": "anime",
+      "name": "Anime",
+      "label": "Anime",
+      "description": "Tuned for anime: dual audio and the release groups anime fans prefer, 1080p Bluray, WEB and remuxes.",
+      "radarr": {
+        "base": "anime-remux-1080p"
+      },
+      "sonarr": {
+        "base": "anime-remux-1080p"
+      }
     }
   ]
 }
