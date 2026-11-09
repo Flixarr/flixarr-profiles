@@ -1,92 +1,113 @@
 {
   "_about": "Flixarr quality profiles. Each recipe starts from a TRaSH Guides profile and changes only what's listed. tools/compile.py turns these into profiles.json, the file Flixarr installs download.",
+  "rules": {
+    "upgrade": 500,
+    "soft": -400,
+    "hard": ["BR-DISK", "Extras", "3D", "Line/Mic Dubbed", "Upscaled"],
+    "no_penalty": ["LQ", "LQ (Release Title)"],
+    "replaced": ["Language: Not Original"],
+    "language": { "library": "Language: Library", "both": "Language: Library and Original", "other": "Language: Unwanted" }
+  },
+  "sizes": {
+    "min": { "SD": 1, "720p": 2, "1080p": 3, "2160p": 8 },
+    "remux": { "1080p": 50, "2160p": 110 }
+  },
+  "smallFileGroups": {
+    "radarr": [
+      { "name": "YTS", "match": "\\b(YTS|YIFY)\\b" },
+      { "name": "Pahe", "match": "\\bPahe\\b" },
+      { "name": "GalaxyRG", "match": "\\bGalaxyRG\\b" },
+      { "name": "MeGusta", "match": "\\bMeGusta\\b" },
+      { "name": "PSA", "match": "\\bPSA\\b" },
+      { "name": "Tigole", "match": "\\bTigole\\b" },
+      { "name": "LAMA", "match": "\\bLAMA\\b" }
+    ],
+    "sonarr": [
+      { "name": "MeGusta", "match": "\\bMeGusta\\b" },
+      { "name": "Pahe", "match": "\\bPahe\\b" },
+      { "name": "PSA", "match": "\\bPSA\\b" },
+      { "name": "GalaxyTV", "match": "\\bGalaxyTV\\b" },
+      { "name": "ELiTE", "match": "\\bELiTE\\b" }
+    ]
+  },
   "profiles": [
-    {
-      "id": "standard",
-      "name": "Standard",
-      "label": "Standard (1080p)",
-      "description": "1080p Bluray and WEB, upgrading to the best 1080p release. No x265 for HD, no remuxes. The default for most libraries.",
-      "radarr": {
-        "base": "hd-bluray-web"
-      },
-      "sonarr": {
-        "base": "web-1080p"
-      }
-    },
     {
       "id": "space-saver",
       "name": "Space Saver",
-      "label": "Space Saver (720p)",
-      "description": "720p Bluray and WEB for smaller files. Same release-quality rules as Standard (no x265 for HD), just a lower resolution.",
+      "label": "Space Saver",
+      "defaultOn": true,
+      "description": "Smaller files first. Aims for 720p and favors the groups known for small files. Always tries to get something, and keeps the first small copy it finds.",
       "radarr": {
-        "base": "hd-bluray-web",
-        "allowed": [
-          "Bluray-720p",
-          "WEB 720p"
-        ],
-        "cutoff": "Bluray-720p"
+        "base": "hd-bluray-web", "mode": "prefer", "style": "merged", "ladder": ["720p", "1080p", "2160p", "SD"], "cutoff": "720p",
+        "floor": -5000, "stop": 22500, "language": { "library": 10000, "both": 10000 },
+        "scores": { "Small File Groups": 2500, "x265 (HD)": 800, "Remux": -400 }
       },
       "sonarr": {
-        "base": "web-1080p",
-        "allowed": [
-          "WEB 720p"
-        ],
-        "cutoff": "WEB 720p"
+        "base": "web-1080p", "mode": "prefer", "style": "merged", "ladder": ["720p", "1080p", "2160p", "SD"], "cutoff": "720p",
+        "floor": -5000, "stop": 22500, "language": { "library": 10000, "both": 10000 },
+        "scores": { "Small File Groups": 2500, "x265 (HD)": 800, "Remux": -400 }
       }
     },
     {
-      "id": "4k",
-      "name": "4K",
-      "label": "4K",
-      "description": "2160p Bluray and WEB with HDR and Dolby Vision preferred. For 4K screens and plenty of space.",
+      "id": "standard",
+      "name": "Standard",
+      "label": "Standard",
+      "defaultOn": true,
+      "description": "A good 1080p copy for most libraries. Always tries to get something, and stops upgrading once it has a good one.",
       "radarr": {
-        "base": "uhd-bluray-web"
+        "base": "hd-bluray-web", "mode": "prefer", "ladder": ["1080p", "720p", "2160p", "SD"], "cutoff": "WEB 1080p",
+        "floor": -5000, "stop": 21600, "language": { "library": 10000, "both": 10000 }
       },
       "sonarr": {
-        "base": "web-2160p"
+        "base": "web-1080p", "mode": "prefer", "ladder": ["1080p", "720p", "2160p", "SD"], "cutoff": "WEB 1080p",
+        "floor": -5000, "stop": 21600, "language": { "library": 10000, "both": 10000 }
       }
     },
     {
-      "id": "4k-fallback",
-      "name": "4K with 1080p fallback",
-      "label": "4K, or 1080p for now",
-      "description": "2160p Bluray and WEB with HDR preferred, but grabs 1080p when no 4K copy exists yet and upgrades to 4K later. For a 4K library that shouldn't wait.",
+      "id": "high-quality",
+      "name": "High Quality",
+      "label": "High Quality",
+      "defaultOn": true,
+      "description": "A great 4K copy with HDR and top audio. Takes a lower quality if 4K isn't out yet, then upgrades when it is.",
       "radarr": {
-        "base": "uhd-bluray-web",
-        "allowed": [
-          "Bluray-2160p",
-          "WEB 2160p",
-          "Bluray-1080p",
-          "WEB 1080p"
-        ],
-        "cutoff": "Bluray-2160p"
+        "base": "uhd-bluray-web", "mode": "prefer", "ladder": ["2160p", "1080p", "720p", "SD"], "cutoff": "Bluray-2160p",
+        "floor": -5000, "stop": 1000000, "language": { "library": 10000, "both": 10000 }
       },
       "sonarr": {
-        "base": "web-2160p-combined"
+        "base": "web-2160p", "mode": "prefer", "ladder": ["2160p", "1080p", "720p", "SD"], "cutoff": "Bluray-2160p",
+        "floor": -5000, "stop": 1000000, "language": { "library": 10000, "both": 10000 }
       }
     },
     {
-      "id": "remux",
-      "name": "Remux",
-      "label": "Remux (1080p)",
-      "description": "Untouched 1080p Bluray remuxes, falling back to the best WEB release. The highest quality without 4K, and very large files.",
+      "id": "no-compromise",
+      "name": "No Compromise",
+      "label": "No Compromise",
+      "defaultOn": false,
+      "description": "Disc-quality copies, often 50 to 80 GB per movie. Needs a lot of storage. May wait for a good copy, and never takes less than a top 1080p.",
       "radarr": {
-        "base": "remux-web-1080p"
+        "base": "remux-web-2160p", "mode": "strict", "ladder": ["remux-2160p", "remux-1080p", "web-2160p", "web-1080p"], "cutoff": "Remux-2160p",
+        "floor": 1500, "stop": 1000000, "language": { "library": 200, "both": 200 },
+        "scores": { "Remux": 2000 }
       },
       "sonarr": {
-        "base": "remux-web-1080p"
+        "base": "remux-web-2160p", "mode": "strict", "ladder": ["remux-2160p", "remux-1080p", "web-2160p", "web-1080p"], "cutoff": "Bluray-2160p Remux",
+        "floor": 1500, "stop": 1000000, "language": { "library": 200, "both": 200 },
+        "scores": { "Remux": 2000 }
       }
     },
     {
       "id": "anime",
       "name": "Anime",
       "label": "Anime",
-      "description": "Tuned for anime: dual audio and the release groups anime fans prefer, 1080p Bluray, WEB and remuxes.",
+      "defaultOn": false,
+      "description": "Tuned for anime: dual audio and the release groups anime fans prefer. Used automatically for anime requests once it's turned on.",
       "radarr": {
-        "base": "anime-remux-1080p"
+        "base": "anime-remux-1080p", "mode": "prefer", "append": ["2160p"],
+        "floor": -5000, "stop": 1000000, "language": { "library": 10000, "both": 10000 }
       },
       "sonarr": {
-        "base": "anime-remux-1080p"
+        "base": "anime-remux-1080p", "mode": "prefer", "append": ["2160p"],
+        "floor": -5000, "stop": 1000000, "language": { "library": 10000, "both": 10000 }
       }
     }
   ]
